@@ -264,6 +264,7 @@ span {
         margin-left: 0;
         margin-top: 7rem;
         transform: rotate(0deg);
+        border-radius: 40%;
     }
 
     .home-img img:hover {
