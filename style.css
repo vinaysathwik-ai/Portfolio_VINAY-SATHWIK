@@ -263,6 +263,11 @@ span {
         width: 50vw;
         margin-left: 0;
         margin-top: 7rem;
+        transform: rotate(45deg);
+    }
+
+    .home-img img:hover {
+        transform: rotate(45deg) scale(1.05);
     }
 
     #menu-icon {
