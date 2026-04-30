@@ -260,14 +260,14 @@ span {
     }
 
     .home-img img {
-        width: 50vw;
+        width: 40vw;
         margin-left: 0;
         margin-top: 7rem;
-        transform: rotate(45deg);
+        transform: rotate(0deg);
     }
 
     .home-img img:hover {
-        transform: rotate(45deg) scale(1.05);
+        transform: rotate(0deg) scale(1.05);
     }
 
     #menu-icon {
