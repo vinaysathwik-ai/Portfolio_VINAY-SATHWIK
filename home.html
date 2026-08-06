@@ -8,7 +8,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <title>VINAYSATHWIK_portfolio</title>
+    <title>VINAYSATHWIK</title>
 </head>
 
 <body>
@@ -24,9 +24,6 @@
         </nav>
     </header>
     <section class="home" id="home">
-        <div class="home-img">
-            <img class="img" src="PASS.jpeg" alt="">
-        </div>
         <div class="home-content">
             <h1>Hi , it's <span>Vinay Sathwik</span></h1>
             <h3 class="typing-text">I'm a <span></spa></h3>
@@ -44,69 +41,31 @@
     </section>
     <section class="skills animate-on-scroll" id="skills">
         <h1 class="heading">My Skills</h1>
-        <h1>Languages</h1>
-        <div class="skills-container">
-
-            <div class="skill-card">
-                <h3>C Language</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 85%;"></div>
+        <div class="skills-wrapper">
+            <!-- Languages Radar Chart -->
+            <div class="radar-wrapper animate-on-scroll">
+                <h2 class="radar-title">Languages</h2>
+                <div class="radar-chart-container">
+                    <div class="skill-item" data-name="HTML & CSS" data-value="90" data-level="Expert"></div>
+                    <div class="skill-item" data-name="C Language" data-value="85" data-level="Advanced"></div>
+                    <div class="skill-item" data-name="C++" data-value="60" data-level="Intermediate"></div>
+                    <div class="skill-item" data-name="Java" data-value="60" data-level="Intermediate"></div>
+                    <div class="skill-item" data-name="Python" data-value="55" data-level="Intermediate"></div>
+                    <div class="skill-item" data-name="JavaScript" data-value="60" data-level="Intermediate"></div>
                 </div>
             </div>
+        
 
-            <div class="skill-card">
-                <h3>JavaScript</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 60%;"></div>
+            <!-- Web Development Radar Chart -->
+            <div class="radar-wrapper animate-on-scroll">
+                <h2 class="radar-title">Web Development</h2>
+                <div class="radar-chart-container">
+                    <div class="skill-item" data-name="Web 3" data-value="60" data-level="Intermediate"></div>
+                    <div class="skill-item" data-name="mongodb" data-value="85" data-level="Advanced"></div>
+                    <div class="skill-item" data-name="Node Js" data-value="55" data-level="Intermediate"></div>
+                    <div class="skill-item" data-name="React" data-value="50" data-level="Intermediate"></div>
                 </div>
             </div>
-
-            <div class="skill-card">
-                <h3>Python</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 55%;"></div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <h3>HTML & CSS</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 90%;"></div>
-                </div>
-            </div>
-
-        </div>
-        <h1>Web Development</h1>
-        <div class="skills-container">
-
-            <div class="skill-card">
-                <h3>WEB 3</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 60%;"></div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <h3>Node Js</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 55%;"></div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <h3>React</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 50%;"></div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <h3>mongodb</h3>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 85%;"></div>
-                </div>
-            </div>
-
         </div>
     </section>
     <section class="education animate-on-scroll" id="education">
@@ -192,6 +151,142 @@
         </div>
     </section>
     <script>
+        // Dynamic Radar Chart Generator
+        document.addEventListener("DOMContentLoaded", () => {
+            const charts = document.querySelectorAll(".radar-chart-container");
+            charts.forEach(container => {
+                // Find all skill items
+                const skillItems = container.querySelectorAll(".skill-item");
+                const skills = Array.from(skillItems).map(item => ({
+                    name: item.getAttribute("data-name"),
+                    value: parseInt(item.getAttribute("data-value"), 10),
+                    level: item.getAttribute("data-level")
+                }));
+                
+                const N = skills.length;
+                if (N === 0) return;
+                
+                // SVG dimensions & grid radius configuration
+                const size = 500;
+                const xc = 250;
+                const yc = 250;
+                const R = 130;
+                const R_ext = R + 15;
+                const R_label = R + 45;
+                
+                // Compute mathematical angles for N vertices (diamond, pentagon, hexagon etc.)
+                const angles = [];
+                for (let i = 0; i < N; i++) {
+                    angles.push((2 * Math.PI * i) / N - Math.PI / 2);
+                }
+                
+                // Build dynamic SVG contents (using subtle, muted slate colors)
+                let svgContent = `
+                    <defs>
+                        <linearGradient id="poly-grad-muted" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(148, 163, 184, 0.25)" />
+                            <stop offset="100%" stop-color="rgba(148, 163, 184, 0.05)" />
+                        </linearGradient>
+                    </defs>
+                `;
+                
+                // Grid levels (25%, 50%, 75%, 100%)
+                const levels = [0.25, 0.50, 0.75, 1.0];
+                levels.forEach(L => {
+                    const points = [];
+                    for (let i = 0; i < N; i++) {
+                        const x = xc + (R * L) * Math.cos(angles[i]);
+                        const y = yc + (R * L) * Math.sin(angles[i]);
+                        points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+                    }
+                    const isDashed = (L === 0.25 || L === 0.75) ? 'stroke-dasharray="2,2" stroke-opacity="0.4"' : 'stroke-opacity="0.7"';
+                    svgContent += `<polygon points="${points.join(" ")}" fill="none" stroke="var(--border-color)" stroke-width="1.2" ${isDashed} />`;
+                });
+                
+                // Axes lines, tick marks, and arrowheads
+                for (let i = 0; i < N; i++) {
+                    const angle = angles[i];
+                    const cos = Math.cos(angle);
+                    const sin = Math.sin(angle);
+                    
+                    // Radial axis line
+                    const x_end = xc + R_ext * cos;
+                    const y_end = yc + R_ext * sin;
+                    svgContent += `<line x1="${xc}" y1="${yc}" x2="${x_end.toFixed(1)}" y2="${y_end.toFixed(1)}" stroke="#475569" stroke-width="1.2" stroke-dasharray="4,4" />`;
+                    
+                    // Perpendicular ticks along the axis at 25%, 50%, 75%, 100%
+                    levels.forEach(L => {
+                        const d = R * L;
+                        const tx = xc + d * cos;
+                        const ty = yc + d * sin;
+                        const tickLen = 4;
+                        const x1 = tx - sin * tickLen;
+                        const y1 = ty + cos * tickLen;
+                        const x2 = tx + sin * tickLen;
+                        const y2 = ty - cos * tickLen;
+                        svgContent += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#475569" stroke-width="1.2" />`;
+                    });
+                    
+                    // Arrowhead pointing outwards at the tip of the axis
+                    const arrowLength = 8;
+                    const arrowWidth = 4;
+                    const x_arrow = xc + (R_ext + 5) * cos;
+                    const y_arrow = yc + (R_ext + 5) * sin;
+                    const px = -sin * arrowWidth;
+                    const py = cos * arrowWidth;
+                    const pt1_x = x_end - cos * arrowLength + px;
+                    const pt1_y = y_end - sin * arrowLength + py;
+                    const pt2_x = x_end - cos * arrowLength - px;
+                    const pt2_y = y_end - sin * arrowLength - py;
+                    
+                    svgContent += `<polygon points="${x_arrow.toFixed(1)},${y_arrow.toFixed(1)} ${pt1_x.toFixed(1)},${pt1_y.toFixed(1)} ${pt2_x.toFixed(1)},${pt2_y.toFixed(1)}" fill="#475569" />`;
+                }
+                
+                // Muted values polygon
+                const valPoints = [];
+                for (let i = 0; i < N; i++) {
+                    const val = skills[i].value;
+                    const angle = angles[i];
+                    const x = xc + (R * (val / 100)) * Math.cos(angle);
+                    const y = yc + (R * (val / 100)) * Math.sin(angle);
+                    valPoints.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+                }
+                
+                svgContent += `<polygon points="${valPoints.join(" ")}" fill="url(#poly-grad-muted)" stroke="rgba(148, 163, 184, 0.8)" stroke-width="2.5" class="radar-poly" />`;
+                
+                // Create SVG node
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("viewBox", "0 0 500 500");
+                svg.setAttribute("class", "radar-chart");
+                svg.innerHTML = svgContent;
+                
+                container.appendChild(svg);
+                
+                // Dynamic labels positioned centered around the outer perimeter of the SVG
+                skills.forEach((skill, i) => {
+                    const angle = angles[i];
+                    const x_label = xc + R_label * Math.cos(angle);
+                    const y_label = yc + R_label * Math.sin(angle);
+                    
+                    const leftPct = (x_label / size) * 100;
+                    const topPct = (y_label / size) * 100;
+                    
+                    const labelDiv = document.createElement("div");
+                    labelDiv.className = "skill-label";
+                    labelDiv.style.left = `${leftPct.toFixed(1)}%`;
+                    labelDiv.style.top = `${topPct.toFixed(1)}%`;
+                    labelDiv.style.transform = "translate(-50%, -50%)";
+                    
+                    labelDiv.innerHTML = `
+                        <h4>${skill.name}</h4>
+                        <p>${skill.level} • ${skill.value}%</p>
+                    `;
+                    
+                    container.appendChild(labelDiv);
+                });
+            });
+        });
+
         // Scroll reveal animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
