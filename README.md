@@ -120,4 +120,4 @@ This project is open-source and available under the MIT License.
 This portfolio is a reflection of my current skills and learning journey.
 I will continue to improve and update it as I grow in my career.
 
----
+---  
